@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Group Expense Tracker — Professional</title>
+<style>
+  /* === Global Reset and Base Styles === */
+  :root {
+    --primary-color: #0d6efd; /* A vibrant blue */
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --bg-light: #f8f9fa; /* Very light background */
+    --text-dark: #212529;
+    --border-light: #dee2e6;
+  }
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+  
+  /* === Layout and Card Styles === */
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .card{
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    /* Professional Shadow Effect */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+  }
+  h1{
+    margin: 0 0 10px;
+    font-size: 26px;
+    text-align: center;
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+  h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+    color: var(--text-dark);
+    font-weight: 600;
+  }
+  .row{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* === Form Elements and Buttons === */
+  input:not([type="checkbox"]), select, button{
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  input:focus, select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    outline: none;
+  }
+  button{
+    cursor: pointer;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    font-weight: 500;
+  }
+  button:hover:not(:disabled){
+    background: #0b5ed7; /* Darker primary color on hover */
+  }
+  .btn-secondary {
+    background: var(--secondary-color);
+  }
+  .btn-secondary:hover {
+    background: #5c636a;
+  }
+  .btn-danger {
+    background: var(--danger-color);
+  }
+  .btn-danger:hover {
+    background: #bb2d3b;
+  }
+  .btn-reset {
+      background: #dc3545; /* Red for destructive action */
+  }
+
+  /* === Utility Styles === */
+  .small{
+    font-size: 13px;
+    color: var(--secondary-color);
+  }
+  .info-text {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 15px;
+  }
+  
+  /* === Friends List Styles === */
+  .person{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: #f8f8ff;
+    flex-grow: 1;
+    min-width: 150px; /* Ensure some minimum width for small screens */
+  }
+  .person input {
+    font-weight: 600;
+    flex-grow: 1;
+    padding: 0;
+  }
+  .person button {
+    background: #adb5bd; /* Light grey for remove */
+    padding: 4px 8px;
+    font-size: 13px;
+  }
+
+  /* === Balances and Debts Styles === */
+  .bal-box {
+    padding: 12px;
+    border-radius: 8px;
+    flex: 1 1 120px;
+    text-align: center;
+    border: 1px solid var(--border-light);
+    background: #fff;
+    transition: transform 0.2s;
+  }
+  .bal-box:hover {
+      transform: translateY(-2px);
+  }
+  .bal-pos{
+    color: var(--success-color);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .bal-neg{
+    color: var(--danger-color);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  
+  /* === Table Styles (Pairwise Debts) === */
+  table{
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  th,td{
+    padding: 10px 8px;
+    border-bottom: 1px solid #f0f3f7;
+    text-align: left;
+  }
+  th {
+    background: var(--bg-light);
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* === History Styles === */
+  .history-item{
+    border-left: 4px solid var(--primary-color);
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  .history-item.payment {
+      border-left-color: var(--success-color); /* Highlight payments */
+  }
+  .history-item span.small {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+  }
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  #undoLastBtn {
+    padding: 8px 15px;
+    font-size: 13px;
+    border-radius: 6px;
+    background: var(--danger-color);
+  }
+
+  /* === Responsive Adjustments === */
+  @media (max-width: 600px){
+    body {
+      padding: 10px;
+    }
+    .row{
+      flex-direction: column;
+      gap: 10px; /* Reduced gap for vertical stacking */
+    }
+    .row > * {
+      width: 100% !important; /* Force flex items to be full width */
+    }
+    .person {
+      min-width: 100%;
+    }
+    .bal-box {
+      flex: 1 1 100%; /* Full width for balances */
+    }
+    .card {
+        padding: 15px;
+    }
+    .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    #undoLastBtn {
+        margin-top: 10px;
+        width: 100%;
+    }
+    /* Special handling for pay/to selects to keep the 'pays' text visible */
+    #payFrom, #payTo {
+        margin-bottom: 0 !important;
+    }
+    .row > .small {
+        width: auto !important;
+        text-align: center;
+        margin-top: -5px; /* Pull the 'pays' text up */
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div id="authScreen" class="card" style="max-width:400px;margin:auto;margin-top:100px;text-align:center;">
+  <h1>Group Expense Tracker</h1>
+  <p class="info-text">Start by creating a new group or joining an existing one.</p>
+  <div class="row" style="margin-top:15px; justify-content:center; gap: 15px;">
+    <button id="createGroupBtn">Create Group</button>
+    <button id="joinGroupBtn" class="btn-secondary">Join Group</button>
+  </div>
+</div>
+
+<div id="groupSetup" class="card" style="display:none;max-width:400px;margin:auto;margin-top:100px;text-align:center;">
+  <h3 id="setupTitle"></h3>
+  <div style="margin-top:10px;">
+    <input id="groupIdInput" placeholder="Enter Group ID" style="margin-top:8px;width:90%"><br/>
+    <input id="groupPassInput" placeholder="Set Password (for reset)" type="password" style="margin-top:8px;width:90%;display:none;"><br/>
+    <div class="row" style="margin-top:15px; justify-content:center; gap: 15px;">
+        <button id="confirmGroupBtn">Continue</button>
+        <button id="backBtn" class="btn-secondary">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="mainApp" style="display:none;">
+  <div id="groupHeader" style="text-align:center;margin-bottom:15px">
+    <h1>Group Expense Tracker</h1>
+    <div id="groupInfo" class="small" style="font-size:15px; font-weight: 500;"></div>
+  </div>
+  <div id="logoutContainer" style="display:flex;justify-content:flex-end;margin-bottom:15px">
+    <button id="logoutBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 14px;">Logout</button>
+  </div>
+
+  <div class="card">
+    <h3>👥 Friends (Edit Names)</h3>
+    <div id="friendsList" class="row" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:15px; align-items: stretch;">
+      <input id="newFriendName" placeholder="Enter new friend's name" style="flex-grow: 1;"/>
+      <button id="addFriendBtn" style="white-space: nowrap;">Add Friend</button>
+      <button id="resetBtn" class="btn-reset" style="white-space: nowrap;">Reset All</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>💸 Add Expense</h3>
+    <p class="small" style="margin-bottom: 10px;">Select participants manually or use "Select All"</p>
+    <div class="row">
+      <select id="payerSelect" style="flex: 1;"></select>
+      <input id="amountInput" type="number" placeholder="Enter amount in ₹" style="flex: 1; min-width: 100px;"/>
+      <input id="noteInput" placeholder="Purpose (e.g., Food, Hotel, Taxi)" style="flex: 2;"/>
+    </div>
+    <div style="margin-top:12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+        <label style="margin-right:8px; font-weight: 600; display: inline-flex; align-items: center;">
+            <input type="checkbox" id="selectAllParticipants" style="margin-right:4px;"> Select All
+        </label>
+        <div id="participantsCheckboxes" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+    </div>
+    <div style="margin-top:15px">
+      <button id="addExpenseBtn" style="width:100%;">Record Expense</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🤝 Record Payment (Settlement)</h3>
+    <div class="row">
+      <select id="payFrom" style="flex: 1;"></select>
+      <span class="small" style="margin: 0; white-space: nowrap; font-size: 15px; font-weight: 600;">pays</span>
+      <select id="payTo" style="flex: 1;"></select>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <input id="payAmount" type="number" placeholder="Enter amount in ₹" style="flex: 1;"/>
+        <button id="payBtn" style="flex: 1;">Record Payment</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Dashboard</h3>
+    <p class="small info-text">Net Balances (Who owes whom in total)</p>
+    <div id="balancesDisplay" class="row"></div>
+    
+    <div style="margin-top:20px">
+      <h3 style="margin-bottom: 8px;">Pairwise Debts</h3>
+      <p class="small info-text">Detailed breakdown of debts between every pair.</p>
+      <div id="pairwiseContainer" class="small"></div>
+    </div>
+    
+    <div style="margin-top:20px">
+      <h3 style="margin-bottom: 8px;">Suggested Minimal Settlements</h3>
+      <p class="small info-text">The simplest way to clear all debts.</p>
+      <div id="suggestions" class="small"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="history-header">
+      <h3>📜 History</h3>
+      <button id="undoLastBtn" class="btn-danger" style="display:none;">
+        Undo Last Action
+      </button>
+    </div>
+    <div id="historyList" class="small" style="color: #495057;"></div>
+  </div>
+</div>
+
+</div> <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBRP-trsTMixTrhSdyd97AeCix70PytugU",
+  authDomain: "friend-expenses.firebaseapp.com",
+  projectId: "friend-expenses",
+  storageBucket: "friend-expenses.firebasestorage.app",
+  messagingSenderId: "402459927469",
+  appId: "1:402459927469:web:62e2ddcc5da979e711f724"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let groupId="", resetPassword="", friends=[], debts={}, history=[], groupRef;
+
+window.onload=()=>{
+  const last=localStorage.getItem("lastGroup");
+  if(last){groupId=last;groupRef=doc(db,"groups",groupId);initApp();}
+};
+
+document.getElementById("createGroupBtn").onclick=()=>{
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("groupSetup").style.display="block";
+  document.getElementById("setupTitle").textContent="Create New Group";
+  document.getElementById("groupPassInput").style.display="block";
+};
+
+document.getElementById("joinGroupBtn").onclick=()=>{
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("groupSetup").style.display="block";
+  document.getElementById("setupTitle").textContent="Join Existing Group";
+  document.getElementById("groupPassInput").style.display="none";
+};
+
+document.getElementById("backBtn").onclick=()=>{
+  document.getElementById("groupSetup").style.display="none";
+  document.getElementById("authScreen").style.display="block";
+};
+
+document.getElementById("confirmGroupBtn").onclick=async()=>{
+  groupId=document.getElementById("groupIdInput").value.trim();
+  if(!groupId)return alert("Enter valid Group ID");
+  groupRef=doc(db,"groups",groupId);
+  const snap=await getDoc(groupRef);
+  if(document.getElementById("groupPassInput").style.display==="block"){
+    if(snap.exists()){alert("⚠️ Group already exists — use Join Group instead!");return;}
+    resetPassword=document.getElementById("groupPassInput").value.trim();
+    if(!resetPassword)return alert("Enter password");
+    await setDoc(groupRef,{friends:[],debts:{},history:[],meta:{resetPass:btoa(resetPassword)}});
+  }else{
+    if(!snap.exists())return alert("Group not found!");
+    const data=snap.data();
+    resetPassword=data.meta?.resetPass?atob(data.meta.resetPass):"Csegroup";
+  }
+  localStorage.setItem("lastGroup",groupId);
+  initApp();
+};
+
+function initApp(){
+  document.getElementById("authScreen").style.display="none";
+  document.getElementById("groupSetup").style.display="none";
+  document.getElementById("mainApp").style.display="block";
+  document.getElementById("groupInfo").textContent="Group ID: "+groupId;
+  loadData();setupFirebaseSync();renderAll();
+}
+
+document.getElementById("logoutBtn").onclick=()=>{
+  if(confirm("Are you sure you want to log out?")){
+    localStorage.removeItem("lastGroup");
+    document.getElementById("mainApp").style.display="none";
+    document.getElementById("authScreen").style.display="block";
+  }
+};
+
+function loadData(){
+  const data=localStorage.getItem("data_"+groupId);
+  if(data){const p=JSON.parse(data);friends=p.friends||[];debts=p.debts||{};history=p.history||[];}
+  else{friends=[];debts={};history=[];}
+}
+function saveData(){localStorage.setItem("data_"+groupId,JSON.stringify({friends,debts,history}));}
+
+function setupFirebaseSync(){
+  onSnapshot(groupRef,snap=>{
+    if(snap.exists()){
+      const d=snap.data();
+      friends=d.friends||[];debts=d.debts||{};history=d.history||[];
+      saveData();renderAll();
+    }
+  });
+}
+
+function syncToFirebase(){setDoc(groupRef,{friends,debts,history,meta:{resetPass:btoa(resetPassword)}},{merge:true});}
+
+function simplifyDebts(){
+  for(let i=0;i<friends.length;i++){
+    for(let j=i+1;j<friends.length;j++){
+      const a=friends[i],b=friends[j],ab=debts[a][b]||0,ba=debts[b][a]||0;
+      if(ab>ba){debts[a][b]=+(ab-ba).toFixed(2);debts[b][a]=0;}
+      else{debts[b][a]=+(ba-ab).toFixed(2);debts[a][b]=0;}
+    }
+  }
+}
+
+function computeNet(){
+  const net={};friends.forEach(f=>net[f]=0);
+  friends.forEach(a=>friends.forEach(b=>{if(a!==b){net[a]-=(debts[a][b]||0);net[b]+=(debts[a][b]||0);}}));
+  return net;
+}
+
+function computeSuggested(){
+  const net=computeNet(),creditors=[],debtors=[];
+  for(const [n,v] of Object.entries(net)){if(v>0.01)creditors.push([n,v]);else if(v<-0.01)debtors.push([n,-v]);}
+  creditors.sort((a,b)=>b[1]-a[1]);debtors.sort((a,b)=>b[1]-a[1]);
+  const res=[];let i=0,j=0;
+  while(i<debtors.length&&j<creditors.length){
+    const [dn,da]=debtors[i],[cn,ca]=creditors[j],pay=Math.min(da,ca);
+    res.push({from:dn,to:cn,amount:+pay.toFixed(2)});
+    debtors[i][1]=+(da-pay).toFixed(2);creditors[j][1]=+(ca-pay).toFixed(2);
+    if(debtors[i][1]<0.01)i++;if(creditors[j][1]<0.01)j++;
+  }
+  return res;
+}
+
+function recordExpense(payer,amount,parts,note){
+  const share=+(amount/parts.length).toFixed(2);
+  parts.forEach(p=>{if(p!==payer)debts[p][payer]=+((debts[p][payer]||0)+share).toFixed(2);});
+  history.unshift({type:'expense',payer,amount:+amount,participants:parts,note,ts:Date.now()});
+  simplifyDebts();saveData();syncToFirebase();renderAll();
+}
+
+function recordPayment(from,to,amt){
+  const pay = amt; 
+  debts[from][to]=+((debts[from][to]||0)-pay).toFixed(2);
+  history.unshift({type:'payment',from,to,amount:pay,ts:Date.now()});
+  simplifyDebts();saveData();syncToFirebase();renderAll();
+}
+
+function undoLastAction(){
+  if(!history.length) return;
+
+  const lastAction = history.shift();
+
+  if(lastAction.type === 'expense'){
+    const {payer, amount, participants} = lastAction;
+    const share = +(amount / participants.length).toFixed(2);
+    participants.forEach(p => {
+      if(p !== payer) {
+        debts[p][payer] = +((debts[p][payer] || 0) - share).toFixed(2);
+        if (debts[p][payer] < 0.005) debts[p][payer] = 0;
+      }
+    });
+  } else if (lastAction.type === 'payment'){
+    const {from, to, amount} = lastAction;
+    debts[from][to] = +((debts[from][to] || 0) + amount).toFixed(2);
+  }
+
+  simplifyDebts();
+  saveData();
+  syncToFirebase();
+  renderAll();
+  alert(`✅ Last record (${lastAction.type}) has been successfully undone.`);
+}
+
+function renderAll(){renderFriends();renderSelects();renderCheckboxes();renderBalances();renderPairwise();renderSuggestions();renderHistory();}
+
+function renderFriends(){
+  const list=document.getElementById('friendsList');list.innerHTML='';
+  friends.forEach((f,i)=>{
+    const div=document.createElement('div');div.className='person';
+    div.innerHTML=`<input value="${f}" data-i="${i}" style="border:none;background:transparent;font-weight:600; padding:0;"/>
+    <button data-i="${i}" class="btn-secondary" style="background:#dc3545; padding:4px 8px; font-size:13px; border:none;">Remove</button>`;
+    list.appendChild(div);
+  });
+  document.querySelectorAll('#friendsList input').forEach(inp=>inp.onchange=()=>{friends[inp.dataset.i]=inp.value.trim();saveData();syncToFirebase();renderAll();});
+  document.querySelectorAll('#friendsList button').forEach(btn=>{
+    btn.onclick=()=>{
+      if(confirm("Are you sure you want to remove this friend?")){
+        friends.splice(btn.dataset.i,1);
+        saveData();syncToFirebase();renderAll();
+      }
+    };
+  });
+}
+
+function renderSelects(){
+  const payer=document.getElementById('payerSelect'),payFrom=document.getElementById('payFrom'),payTo=document.getElementById('payTo');
+  payer.innerHTML=payFrom.innerHTML=payTo.innerHTML='';
+  friends.forEach(f=>{
+    payer.insertAdjacentHTML('beforeend',`<option>${f}</option>`);
+    payFrom.insertAdjacentHTML('beforeend',`<option>${f}</option>`);
+    payTo.insertAdjacentHTML('beforeend',`<option>${f}</option>`);
+  });
+  if(friends.length>=2)payTo.selectedIndex=1;
+}
+
+function renderCheckboxes(){
+  const c=document.getElementById('participantsCheckboxes');c.innerHTML='';
+  friends.forEach(f=>c.insertAdjacentHTML('beforeend',`<label style="display:inline-flex; align-items:center; cursor:pointer;"><input type="checkbox" data-name="${f}" class="participant-checkbox" style="margin-right:4px;"> ${f}</label>`));
+  
+  // Select All Logic
+  const selectAll = document.getElementById('selectAllParticipants');
+  // Preserve state on render if all were checked
+  const allParticipantCheckboxes = document.querySelectorAll('.participant-checkbox');
+  const checkedParticipants = [...allParticipantCheckboxes].filter(cb => cb.checked).length;
+  selectAll.checked = (allParticipantCheckboxes.length > 0 && checkedParticipants === allParticipantCheckboxes.length);
+
+
+  selectAll.onchange = (e) => {
+      document.querySelectorAll('.participant-checkbox').forEach(cb => {
+          cb.checked = e.target.checked;
+      });
+  };
+  
+  allParticipantCheckboxes.forEach(cb => {
+      cb.onchange = () => {
+          const allChecked = [...document.querySelectorAll('.participant-checkbox')].every(c => c.checked);
+          selectAll.checked = allChecked;
+      };
+  });
+}
+
+function renderBalances(){
+  const c=document.getElementById('balancesDisplay');c.innerHTML='';
+  const net=computeNet();
+  friends.forEach(f=>{
+    const b=net[f];const div=document.createElement('div');
+    div.className = 'bal-box';
+    div.innerHTML=`<div style="font-weight:700">${f}</div>
+      <div class="${b>=0?'bal-pos':'bal-neg'}">${b>=0?'+₹'+b:'-₹'+Math.abs(b)}</div>`;
+    c.appendChild(div);
+  });
+}
+
+function renderPairwise(){
+  const c=document.getElementById('pairwiseContainer');c.innerHTML='';
+  if(!friends.length){c.textContent='No friends yet';return;}
+  let html='<table><thead><tr><th>Debtor \\ Creditor</th>';
+  friends.forEach(f=>html+=`<th>${f}</th>`);html+='</tr></thead><tbody>';
+  friends.forEach(a=>{html+=`<tr><td><b>${a}</b></td>`;
+    friends.forEach(b=>{if(a===b)html+='<td>—</td>';else{const v=debts[a][b]||0;html+=`<td>${v>0?'₹'+v:'—'}</td>`;}});
+    html+='</tr>';});
+  html+='</tbody></table>';c.innerHTML=html;
+}
+
+function renderSuggestions(){
+  const s=computeSuggested();const c=document.getElementById('suggestions');
+  if(!s.length){c.innerHTML='<div class="small" style="color:var(--success-color); font-weight: 500;">✅ All settled. No suggestions needed.</div>';return;}
+  c.innerHTML='';s.forEach(it=>{const d=document.createElement('div');d.textContent=`${it.from} → ${it.to} : ₹${it.amount}`;d.style.marginBottom='4px';c.appendChild(d);});
+}
+
+function renderHistory(){
+  const c=document.getElementById('historyList');
+  const undoBtn = document.getElementById('undoLastBtn');
+  c.innerHTML='';
+
+  if(!history.length){
+    c.textContent='No history yet';
+    undoBtn.style.display = 'none'; 
+    return;
+  }
+  
+  undoBtn.style.display = 'block'; 
+
+  history.forEach(ev=>{
+    const d=document.createElement('div');
+    d.className='history-item ' + ev.type; // Add class for coloring
+    
+    const date = new Date(ev.ts);
+    const formattedDate = date.toLocaleDateString("en-IN", {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true
+    });
+    
+    let content = '';
+    
+    if(ev.type === 'expense'){
+        content = `<b>${ev.payer}</b> paid <b>₹${ev.amount}</b> (${ev.note||'No Note'})<br><span class='small'>Split among: ${ev.participants.join(', ')}</span>`;
+    } else { // ev.type === 'payment'
+        content = `<b>${ev.from}</b> paid <b>₹${ev.amount}</b> to <b>${ev.to}</b> (Payment)`;
+    }
+    
+    d.innerHTML = `${content}<br><span class='small' style='color:#777;'>Recorded on: ${formattedDate}</span>`;
+    
+    c.appendChild(d);
+  });
+}
+
+document.getElementById('addFriendBtn').onclick=()=>{
+  const n=document.getElementById('newFriendName').value.trim();
+  if(!n)return alert('Enter name');
+  if(friends.includes(n)) return alert('Friend already exists!');
+  friends.push(n);
+  friends.forEach(f=>{if(!debts[f])debts[f]={};});
+  saveData();syncToFirebase();renderAll();
+  document.getElementById('newFriendName').value='';
+};
+
+document.getElementById('resetBtn').onclick=()=>{
+  const pass=prompt("Enter reset password:");
+  if(pass!==resetPassword)return alert("Incorrect password!");
+  if(confirm("Resetting will DELETE ALL data (friends, debts, history) for this group. Are you absolutely sure?")){
+    friends=[];debts={};history=[];
+    saveData();syncToFirebase();renderAll();
+  }
+};
+
+document.getElementById('addExpenseBtn').onclick=()=>{
+  const payer=document.getElementById('payerSelect').value;
+  const amt=parseFloat(document.getElementById('amountInput').value);
+  const note=document.getElementById('noteInput').value;
+  const parts=[...document.querySelectorAll('.participant-checkbox:checked')].map(c=>c.dataset.name);
+  if(!payer||!amt||amt<=0||!parts.length)return alert("Please fill all fields and select at least one participant.");
+  recordExpense(payer,amt,parts,note);
+  document.getElementById('amountInput').value='';
+  document.getElementById('noteInput').value='';
+  document.getElementById('selectAllParticipants').checked = false; // Reset selection
+  document.querySelectorAll('.participant-checkbox').forEach(cb => cb.checked = false); // Reset selection
+};
+
+document.getElementById('payBtn').onclick=()=>{
+  const from=document.getElementById('payFrom').value,to=document.getElementById('payTo').value;
+  const amt=parseFloat(document.getElementById('payAmount').value);
+  if(!from||!to||from===to||!amt||amt<=0)return alert("Invalid payment: Check sender, receiver, and amount.");
+  recordPayment(from,to,amt);
+  document.getElementById('payAmount').value='';
+};
+
+document.getElementById('undoLastBtn').onclick = () => {
+  if (confirm("⚠️ Are you sure you want to UNDO the last recorded action? This will affect balances and debts.")) {
+    undoLastAction();
+  }
+};
+</script>
+</body>
+</html>
